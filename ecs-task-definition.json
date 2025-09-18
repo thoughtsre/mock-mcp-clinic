@@ -1,0 +1,49 @@
+{
+	"family": "clinic-mcp-task",
+	"networkMode": "awsvpc",
+	"requiresCompatibilities": ["FARGATE"],
+	"cpu": "512",
+	"memory": "1024",
+	"executionRoleArn": "arn:aws:iam::{{accountID}}:role/ecsTaskExecutionRole",
+	"taskRoleArn": "arn:aws:iam::{{accountID}}:role/ecsTaskExecutionRole",
+	"containerDefinitions": [
+		{
+			"name": "clinic-mcp-container",
+			"image": "{{accountID}}.dkr.ecr.ap-southeast-1.amazonaws.com/clinic-mcp:latest",
+			"portMappings": [
+				{
+					"containerPort": 8000,
+					"hostPort": 8000,
+					"protocol": "tcp"
+				}
+			],
+			"essential": true,
+			"environment": [
+				{ "name": "HOST", "value": "0.0.0.0" },
+				{ "name": "PORT", "value": "8000" },
+				{ "name": "HEALTH_HOST", "value": "0.0.0.0" },
+				{ "name": "HEALTH_PORT", "value": "8080" }
+			],
+			"healthCheck": {
+				"command": [
+					"CMD-SHELL",
+					"python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8080/healthz').status==200 else 1)\""
+				],
+				"interval": 30,
+				"timeout": 5,
+				"retries": 3,
+				"startPeriod": 10
+			},
+			"logConfiguration": {
+				"logDriver": "awslogs",
+				"options": {
+					"awslogs-group": "/ecs/clinic-mcp",
+					"awslogs-region": "ap-southeast-1",
+					"awslogs-stream-prefix": "ecs"
+				}
+			}
+		}
+	]
+}
+
+
