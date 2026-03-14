@@ -1,3 +1,5 @@
+> **This repo has been migrated to [GitHub](https://github.com/thoughtsre/mock-mcp-clinic).**
+
 # Clinic MCP Server (HTTP)
 
 A simple Model Context Protocol (MCP) server for a mock doctor's clinic, served over HTTP and deployable to AWS ECS.
